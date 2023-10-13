@@ -1,4 +1,3 @@
-import 'package:e_music/models/models.dart';
 import 'package:e_music/providers/providers.dart';
 import 'package:e_music/services/songService.dart';
 import 'package:e_music/widgets/widgets.dart';
@@ -12,6 +11,7 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     final reproductor = ref.watch(reproductorProvider);
+    final wakeLock = ref.watch(wakeLockProvider);
     final size = MediaQuery.of(context).size;
     return Container(
       decoration: BoxDecoration(
@@ -23,18 +23,20 @@ class HomeScreen extends ConsumerWidget {
             Colors.deepPurple.shade200.withOpacity(0.8),
           ])),
       child: Scaffold(
-        appBar: const CustomAppBar(
-          leading: Icon(Icons.grid_view_rounded, color: Colors.white),
+        appBar: CustomAppBar(
+          leading: IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.grid_view_rounded, color: Colors.white)),
           avatar:
               "https://as2.ftcdn.net/v2/jpg/05/62/57/51/500_F_562575144_J8ohmiSchh1A82kVXqEr9ya50DnQEFQk.jpg",
           title: '',
         ),
-        body: Column(
-          children: [
-            SizedBox(
-              width: size.width,
-              height: size.height * 0.75,
-              child: SingleChildScrollView(
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(
+                width: size.width,
+                height: size.height * 0.778,
                 child: Column(
                   children: [
                     const _FiltrarMusic(),
@@ -43,11 +45,11 @@ class HomeScreen extends ConsumerWidget {
                   ],
                 ),
               ),
-            ),
-            reproductor.reproductor.playerState.playing
-                ? _MiniReproductor(size: size)
-                : Container()
-          ],
+              // reproductor.playerState.playing ?
+              // _MiniReproductor(size: size)
+              // : Container()
+            ],
+          ),
         ),
         bottomNavigationBar: const _CustomNavigationBar(),
       ),
@@ -68,7 +70,7 @@ class _MiniReproductor extends StatelessWidget {
     return Container(
       width: size.width,
       height: size.height * 0.078,
-      color: Colors.transparent,
+      color: Colors.green,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -85,8 +87,8 @@ class _MiniReproductor extends StatelessWidget {
               ),
             ),
           ),
-          Text("Nombre de la cancion"),
-          IconButton(onPressed: () {}, icon: Icon(Icons.play_arrow)),
+          const Text("Nombre de la cancion"),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.play_arrow)),
         ],
       ),
     );
@@ -97,6 +99,7 @@ class _PlayListmusic extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     final playList = ref.watch(playListProvider);
+    final size = MediaQuery.of(context).size;
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -133,19 +136,12 @@ class _TrendingMusic extends ConsumerWidget {
     return trending.when(
         data: (songs) => Column(
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 20, top: 20, bottom: 20),
-                  child: Column(children: [
-                    Padding(
-                      padding: EdgeInsets.only(right: 20),
-                      child: SectionHeader(title: "Tendencia Music"),
-                    )
-                  ]),
-                ),
+                const Column(
+                    children: [SectionHeader(title: "Tendencia Music")]),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.25,
+                    height: MediaQuery.of(context).size.height * 0.22,
                     child: ListView.builder(
                       itemCount: songs.length,
                       scrollDirection: Axis.horizontal,

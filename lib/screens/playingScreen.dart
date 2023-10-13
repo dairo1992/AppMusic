@@ -25,23 +25,23 @@ class PlayingScreenScreen extends ConsumerWidget {
             Colors.deepPurple.shade200.withOpacity(0.8),
           ])),
       child: Scaffold(
-        appBar: const CustomAppBar(
-          title: '',
+        appBar: CustomAppBar(
+          title: "${reproductor.playing}",
         ),
         extendBodyBehindAppBar: true,
         body: song.when(
             data: (data) {
-              reproductor.reproductor.setUrl(
+              reproductor.setUrl(
                   "https://discoveryprovider3.audius.co/v1/tracks/${data!.id}/stream?app_name=E_Music");
               return Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.network(
-                    data.artwork!.the1000X1000!,
-                    fit: BoxFit.fill,
-                  ),
+                  // Image.network(
+                  //   data.artwork!.the1000X1000!,
+                  //   fit: BoxFit.fill,
+                  // ),
                   _BackgroundFilter(),
-                  _MusicPlayer(reproductorProvider: reproductor, song: data),
+                  _MusicPlayer(song: data),
                 ],
               );
             },
@@ -56,22 +56,20 @@ class PlayingScreenScreen extends ConsumerWidget {
   }
 }
 
-class _MusicPlayer extends StatelessWidget {
+class _MusicPlayer extends ConsumerWidget {
   final SongResponse song;
 
-  final ReproductorState reproductorProvider;
-
-  const _MusicPlayer(
-      {super.key, required this.song, required this.reproductorProvider});
+  const _MusicPlayer({super.key, required this.song});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
+    final reproductor = ref.watch(reproductorProvider);
     Stream<PositionData> _positionDataStream() {
       return rxdart.Rx.combineLatest3<Duration, Duration, Duration?,
               PositionData>(
-          reproductorProvider.reproductor.positionStream,
-          reproductorProvider.reproductor.bufferedPositionStream,
-          reproductorProvider.reproductor.durationStream,
+          reproductor.positionStream,
+          reproductor.bufferedPositionStream,
+          reproductor.durationStream,
           (position, bufferedPosition, duration) => PositionData(
               position, bufferedPosition, duration ?? Duration.zero));
     }
@@ -92,7 +90,6 @@ class _MusicPlayer extends StatelessWidget {
               ),
             ),
           ),
-          
           Text(song.title!,
               style: Theme.of(context)
                   .textTheme
@@ -112,11 +109,11 @@ class _MusicPlayer extends StatelessWidget {
                 position: positionData?.position ?? Duration.zero,
                 bufferedPosition:
                     positionData?.bufferedPosition ?? Duration.zero,
-                onChangeEnd: reproductorProvider.reproductor.seek,
+                onChangeEnd: reproductor.seek,
               );
             },
           ),
-          PlayerButtons(reproductorProvider: reproductorProvider),
+          PlayerButtons(),
         ],
       ),
     );

@@ -1,29 +1,22 @@
 import 'package:e_music/providers/reproductorProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 
-class PlayerButtons extends StatelessWidget {
-  const PlayerButtons({
-    super.key,
-    required this.reproductorProvider,
-  });
-
-  final ReproductorState reproductorProvider;
-
+class PlayerButtons extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
+    final reproductor = ref.watch(reproductorProvider);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         StreamBuilder<SequenceState?>(
-            stream: reproductorProvider.reproductor.sequenceStateStream,
+            stream: reproductor.sequenceStateStream,
             builder: (context, snapshot) {
               return IconButton(
                   onPressed: () {
                     print("anterior");
-                    reproductorProvider.reproductor.hasPrevious
-                        ? reproductorProvider.reproductor.seekToPrevious
-                        : null;
+                    reproductor.hasPrevious ? reproductor.seekToPrevious : null;
                   },
                   icon: const Icon(
                     Icons.skip_previous_rounded,
@@ -32,7 +25,7 @@ class PlayerButtons extends StatelessWidget {
                   ));
             }),
         StreamBuilder<PlayerState>(
-          stream: reproductorProvider.reproductor.playerStateStream,
+          stream: reproductor.playerStateStream,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               final playerState = snapshot.data;
@@ -43,11 +36,13 @@ class PlayerButtons extends StatelessWidget {
                   width: 50,
                   height: 50,
                   margin: const EdgeInsets.all(10),
-                  child: const CircularProgressIndicator(color: Colors.white, ),
+                  child: const CircularProgressIndicator(
+                    color: Colors.white,
+                  ),
                 );
-              } else if (!reproductorProvider.reproductor.playing) {
+              } else if (!reproductor.playerState.playing) {
                 return IconButton(
-                    onPressed: reproductorProvider.reproductor.play,
+                    onPressed: reproductor.play,
                     icon: const Icon(
                       Icons.play_arrow,
                       color: Colors.white,
@@ -55,7 +50,7 @@ class PlayerButtons extends StatelessWidget {
                     ));
               } else if (procesingState != ProcessingState.completed) {
                 return IconButton(
-                    onPressed: reproductorProvider.reproductor.pause,
+                    onPressed: reproductor.pause,
                     icon: const Icon(
                       Icons.pause,
                       color: Colors.white,
@@ -63,10 +58,8 @@ class PlayerButtons extends StatelessWidget {
                     ));
               } else {
                 return IconButton(
-                    onPressed: () => reproductorProvider.reproductor.seek(
-                        Duration.zero,
-                        index: reproductorProvider
-                            .reproductor.effectiveIndices!.first),
+                    onPressed: () => reproductor.seek(Duration.zero,
+                        index: reproductor.effectiveIndices!.first),
                     icon: const Icon(
                       Icons.replay_sharp,
                       color: Colors.white,
@@ -79,14 +72,12 @@ class PlayerButtons extends StatelessWidget {
           },
         ),
         StreamBuilder<SequenceState?>(
-            stream: reproductorProvider.reproductor.sequenceStateStream,
+            stream: reproductor.sequenceStateStream,
             builder: (context, snapshot) {
               return IconButton(
                   onPressed: () {
                     print("siguiente");
-                    reproductorProvider.reproductor.hasNext
-                        ? reproductorProvider.reproductor.seekToNext
-                        : null;
+                    reproductor.hasNext ? reproductor.seekToNext : null;
                   },
                   icon: const Icon(
                     Icons.skip_next_rounded,
