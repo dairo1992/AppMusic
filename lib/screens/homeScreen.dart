@@ -33,7 +33,7 @@ class HomeScreen extends ConsumerWidget {
           children: [
             SizedBox(
               width: size.width,
-              height: size.height * 0.75,
+              height: size.height * 0.78,
               child: SingleChildScrollView(
                 child: Column(
                   children: [
@@ -44,9 +44,9 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ),
             ),
-            reproductor.reproductor.playerState.playing
-                ? _MiniReproductor(size: size)
-                : Container()
+            // reproductor.reproductor.playerState.playing ?
+            _MiniReproductor(size: size)
+            // : Container()
           ],
         ),
         bottomNavigationBar: const _CustomNavigationBar(),
@@ -67,8 +67,8 @@ class _MiniReproductor extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: size.width,
-      height: size.height * 0.078,
-      color: Colors.transparent,
+      height: size.height * 0.075,
+      color: Colors.green,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -145,7 +145,7 @@ class _TrendingMusic extends ConsumerWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.25,
+                    height: MediaQuery.of(context).size.height * 0.22,
                     child: ListView.builder(
                       itemCount: songs.length,
                       scrollDirection: Axis.horizontal,
@@ -177,7 +177,7 @@ class _FiltrarMusic extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Padding(
-      padding: const EdgeInsets.all(20.0),
+      padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
