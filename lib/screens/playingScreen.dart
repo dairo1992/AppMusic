@@ -4,16 +4,23 @@ import 'package:e_music/widgets/barraAvance.dart';
 import 'package:e_music/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart' as rxdart;
 
 class PlayingScreenScreen extends ConsumerWidget {
-  final String idSong;
+  final List<String> idSong;
 
   const PlayingScreenScreen({super.key, required this.idSong});
 
   @override
   Widget build(BuildContext context, ref) {
-    final song = ref.watch(songProvider(idSong));
+    final song;
+    if (!idSong[0].startsWith("/storage/")) {
+      song = ref.watch(songProvider(idSong));
+    } else {
+      song = SongResponse();
+    }
     final reproductor = ref.watch(reproductorProvider);
     return Container(
       decoration: BoxDecoration(
@@ -26,31 +33,37 @@ class PlayingScreenScreen extends ConsumerWidget {
           ])),
       child: Scaffold(
         appBar: CustomAppBar(
-          title: "${reproductor.playing}",
-        ),
+            title: "",
+            leading: IconButton(
+              onPressed: () => context.push("/", extra: {"song": song}),
+              icon: const Icon(Icons.arrow_back_ios),
+            )),
         extendBodyBehindAppBar: true,
-        body: song.when(
-            data: (data) {
-              reproductor.setUrl(
-                  "https://discoveryprovider3.audius.co/v1/tracks/${data!.id}/stream?app_name=E_Music");
-              return Stack(
-                fit: StackFit.expand,
-                children: [
-                  // Image.network(
-                  //   data.artwork!.the1000X1000!,
-                  //   fit: BoxFit.fill,
-                  // ),
-                  _BackgroundFilter(),
-                  _MusicPlayer(song: data),
-                ],
-              );
-            },
-            error: (error, stackTrace) => Center(
-                  child: Text("$error"),
-                ),
-            loading: () => const Center(
-                  child: CircularProgressIndicator(),
-                )),
+        // body: song.when(
+        //     data: (data) {
+        //       final playList = ConcatenatingAudioSource(
+        //           useLazyPreparation: true,
+        //           shuffleOrder: DefaultShuffleOrder(),
+        //           children: data!
+        //               .map((e) => AudioSource.uri(Uri.parse(
+        //                   "https://discoveryprovider3.audius.co/v1/tracks/${e.id}/stream?app_name=E_Music")))
+        //               .toList());
+        //       reproductor.setAudioSource(playList,
+        //           initialIndex: 0, initialPosition: Duration.zero);
+        //       return Stack(
+        //         fit: StackFit.expand,
+        //         children: [
+        //           _BackgroundFilter(),
+        //           _MusicPlayer(song: data[reproductor.currentIndex ?? 0]),
+        //         ],
+        //       );
+        //     },
+        //     error: (error, stackTrace) => Center(
+        //           child: Text("$error"),
+        //         ),
+        //     loading: () => const Center(
+        //           child: CircularProgressIndicator(),
+        //         )),
       ),
     );
   }

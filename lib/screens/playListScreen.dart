@@ -1,9 +1,10 @@
-import 'package:e_music/models/models.dart';
-import 'package:e_music/providers/providers.dart';
-import 'package:e_music/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+import 'package:e_music/models/models.dart';
+import 'package:e_music/providers/providers.dart';
+import 'package:e_music/widgets/widgets.dart';
 
 class PlayListScreen extends ConsumerWidget {
   final PlayListResponse playList;
@@ -12,7 +13,8 @@ class PlayListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    final tracks = ref.watch(playListTrackProvider(playList.id!));
+    final (tracks) = ref.watch(playListTrackProvider(playList.id!));
+    final size = MediaQuery.of(context).size;
     return Container(
       decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -33,7 +35,7 @@ class PlayListScreen extends ConsumerWidget {
                   child: Column(
                     children: [
                       _PlayListInformation(playList: playList),
-                      _PlayOrShuffleSwith(),
+                      _buttonsPlayAndShuffles(playList: data),
                       ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
@@ -82,86 +84,70 @@ class PlayListScreen extends ConsumerWidget {
   }
 }
 
-class _PlayOrShuffleSwith extends StatefulWidget {
-  @override
-  State<_PlayOrShuffleSwith> createState() => _PlayOrShuffleSwithState();
-}
-
-class _PlayOrShuffleSwithState extends State<_PlayOrShuffleSwith> {
-  bool isPlay = true;
+class _buttonsPlayAndShuffles extends StatelessWidget {
+  List<SongResponse> playList;
+  _buttonsPlayAndShuffles({
+    Key? key,
+    required this.playList,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          isPlay = !isPlay;
-        });
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Container(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        GestureDetector(
+          onTap: () {
+            List<String> lista = [];
+            playList.forEach((e) {
+              lista.add(e.id!);
+            });
+            context.push("/playing", extra: {'idSong': lista});
+          },
+          child: Container(
+            height: 50,
+            width: size.width * 0.4,
+            decoration: BoxDecoration(
+                color: Colors.pink, borderRadius: BorderRadius.circular(15)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                  child: Text("Play",
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium!
+                          .copyWith(color: Colors.white)),
+                ),
+                const SizedBox(width: 10),
+                const Icon(Icons.play_arrow, color: Colors.white)
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(width: 20),
+        Container(
           height: 50,
-          width: size.width,
+          width: size.width * 0.4,
           decoration: BoxDecoration(
               color: Colors.white, borderRadius: BorderRadius.circular(15)),
-          child: Stack(children: [
-            AnimatedPositioned(
-              duration: const Duration(milliseconds: 100),
-              left: isPlay ? 0 : size.width * 0.45,
-              child: Container(
-                  height: 50,
-                  width: size.width * 0.5,
-                  decoration: BoxDecoration(
-                      color: Colors.pink,
-                      borderRadius: BorderRadius.circular(15))),
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Center(
-                        child: Text("Play",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium!
-                                .copyWith(
-                                    color:
-                                        !isPlay ? Colors.pink : Colors.white)),
-                      ),
-                      const SizedBox(width: 10),
-                      Icon(Icons.play_arrow,
-                          color: !isPlay ? Colors.pink : Colors.white)
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Center(
-                        child: Text("Shuffle",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium!
-                                .copyWith(
-                                    color:
-                                        isPlay ? Colors.pink : Colors.white)),
-                      ),
-                      const SizedBox(width: 10),
-                      Icon(Icons.shuffle_sharp,
-                          color: isPlay ? Colors.pink : Colors.white)
-                    ],
-                  ),
-                ),
-              ],
-            )
-          ]),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Center(
+                child: Text("Play",
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium!
+                        .copyWith(color: Colors.pink)),
+              ),
+              const SizedBox(width: 10),
+              const Icon(Icons.play_arrow, color: Colors.pink)
+            ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }

@@ -10,7 +10,11 @@ class SongCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => context.push("/playing", extra: {'idSong': song.id}),
+      onTap: () {
+        List<String> lista = [];
+        lista.add(song.id!);
+        context.push("/playing", extra: {'idSong': lista});
+      },
       child: Container(
         margin: const EdgeInsets.only(right: 10),
         child: Stack(

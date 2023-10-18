@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:e_music/config/dbConexion.dart';
 import 'package:e_music/models/models.dart';
 import 'package:flutter/foundation.dart';
@@ -8,7 +9,6 @@ class SongService {
   Future<SongResponse?> getSong(String id) async {
     try {
       final resp = await db.get("tracks/$id?app_name=E_Music");
-
       final response = SongResponse.fromJson(resp.data["data"]);
       return response;
     } catch (e) {
@@ -17,6 +17,20 @@ class SongService {
       }
       return null;
     }
+  }
+
+  Future<List<SongResponse>> getPlayListSong(List<String> listid) async {
+    List<SongResponse> lista = [];
+    Completer<List<SongResponse>> c = Completer();
+    for (var e in listid) {
+      try {
+        final resp = await db.get("tracks/$e?app_name=E_Music");
+        final response = SongResponse.fromJson(resp.data["data"]);
+        lista.add(response);
+        c.complete(lista);
+      } catch (e) {}
+    }
+    return c.future;
   }
 
   Future<List<SongResponse>> searchSong(String query) async {

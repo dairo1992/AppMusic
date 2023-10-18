@@ -1,5 +1,7 @@
 import 'package:e_music/models/models.dart';
+import 'package:e_music/providers/providers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class PlayListCard extends StatelessWidget {
@@ -10,8 +12,7 @@ class PlayListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () =>
-          context.push("/playList", extra: {"playList": playList}),
+      onTap: () => context.push("/playList", extra: {"playList": playList}),
       child: Container(
         height: 70,
         margin: const EdgeInsets.only(bottom: 10),
@@ -68,12 +69,10 @@ class PlayListCard extends StatelessWidget {
               ],
             ),
           ),
-          IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.play_arrow_rounded,
-                color: Colors.white,
-              ))
+          const Icon(
+            Icons.play_arrow_rounded,
+            color: Colors.white,
+          )
         ]),
       ),
     );

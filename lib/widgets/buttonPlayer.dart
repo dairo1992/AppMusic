@@ -16,7 +16,7 @@ class PlayerButtons extends ConsumerWidget {
               return IconButton(
                   onPressed: () {
                     print("anterior");
-                    reproductor.hasPrevious ? reproductor.seekToPrevious : null;
+                    reproductor.hasPrevious ? reproductor.seekToPrevious() : null;
                   },
                   icon: const Icon(
                     Icons.skip_previous_rounded,
@@ -77,7 +77,7 @@ class PlayerButtons extends ConsumerWidget {
               return IconButton(
                   onPressed: () {
                     print("siguiente");
-                    reproductor.hasNext ? reproductor.seekToNext : null;
+                    reproductor.hasNext ? reproductor.seekToNext() : null;
                   },
                   icon: const Icon(
                     Icons.skip_next_rounded,

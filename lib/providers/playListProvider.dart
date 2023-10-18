@@ -5,27 +5,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final playListTrackProvider =
     FutureProvider.family<List<SongResponse>, String>((ref, id) async {
   final service = PlayListService();
-  return await service.getPlayListTracks(id);
+  final playlist = await service.getPlayListTracks(id);
+  return playlist;
 });
 
-// class PlayListtracksNotifier extends StateNotifier<List<SongResponse>> {
-//   PlayListtracksNotifier() : super([]);
-
-//   void addPlayListTracks(String id) async {
+// final listTrackIdProvider = Provider.family<List<String>, String>((ref, id) {
+//   List<String> lista = [];
+//   void getList() async {
 //     final service = PlayListService();
-//     final list = await service.getPlayListTracks(id);
-//     state = list;
+//     lista = await service.LisTrackIds(id);
 //   }
-// }
 
-// final playProvider = StateNotifierProvider.family<PlayListtracksNotifier,
-//     List<SongResponse>, String>((ref, id) {
-//   PlayListtracksNotifier().addPlayListTracks(id);
-//   return PlayListtracksNotifier();
-// });
+//   List<String> test() {
+//     getList();
+//     return lista;
+//   }
 
-// final playListTrackProvider =
-//     Provider.family<List<SongResponse>, String>((ref, id) {
-//   final playListTracks = ref.watch(playProvider(id));
-//   return playListTracks;
+//   return test();
 // });
