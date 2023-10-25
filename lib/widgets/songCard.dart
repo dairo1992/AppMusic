@@ -4,16 +4,17 @@ import 'package:go_router/go_router.dart';
 
 class SongCard extends StatelessWidget {
   final SongResponse song;
+  final int indexSong;
 
-  const SongCard({super.key, required this.song});
+  const SongCard({super.key, required this.song, required this.indexSong});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        List<String> lista = [];
-        lista.add(song.id!);
-        context.push("/playing", extra: {'idSong': lista});
+        List<SongResponse> lista = [];
+        lista.add(song);
+        context.push("/playing", extra: {'onlineSongs': lista, 'indexSong': indexSong});
       },
       child: Container(
         margin: const EdgeInsets.only(right: 10),

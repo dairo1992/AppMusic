@@ -8,6 +8,9 @@ class TrendingService {
   Future<List<SongResponse>> getTrending() async {
     try {
       final resp = await db.get("tracks/trending?app_name=E_Music");
+      if (resp.toString().startsWith("<!DOCTYPE")) {
+        return <SongResponse>[];
+      }
       Iterable i = (resp.data["data"]);
       final response =
           List<SongResponse>.from(i.map((e) => SongResponse.fromJson(e)));

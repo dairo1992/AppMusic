@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class PlayListCard extends StatelessWidget {
+class PlayListCard extends ConsumerWidget {
   final PlayListResponse playList;
 
   const PlayListCard({super.key, required this.playList});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
     return GestureDetector(
       onTap: () => context.push("/playList", extra: {"playList": playList}),
       child: Container(
@@ -44,14 +44,11 @@ class PlayListCard extends StatelessWidget {
               children: [
                 SizedBox(
                   width: 200,
-                  height: 35,
-                  child: Center(
-                    child: Text(playList.playlistName!,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            fontWeight: FontWeight.bold, fontSize: 14)),
-                  ),
+                  child: Text(playList.playlistName!,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontWeight: FontWeight.bold, fontSize: 14)),
                 ),
                 SizedBox(
                   width: 200,
@@ -69,12 +66,32 @@ class PlayListCard extends StatelessWidget {
               ],
             ),
           ),
-          const Icon(
-            Icons.play_arrow_rounded,
-            color: Colors.white,
-          )
+          _StarPlayList(idPlayList: playList.id!)
         ]),
       ),
     );
+  }
+}
+
+class _StarPlayList extends ConsumerWidget {
+  final String idPlayList;
+
+  const _StarPlayList({super.key, required this.idPlayList});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    final button = ref.watch(playListTrackProvider(idPlayList));
+    return button.when(
+        data: (data) => IconButton(
+            onPressed: () => context
+                .push("/playing", extra: {'onlineSongs': data, 'indexSong': 0}),
+            icon: const Icon(
+              Icons.play_arrow_rounded,
+              color: Colors.white,
+            )),
+        error: (error, stackTrace) => Container(),
+        loading: () => const CircularProgressIndicator(
+              color: Colors.white,
+            ));
   }
 }

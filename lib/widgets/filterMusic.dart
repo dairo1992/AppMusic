@@ -1,10 +1,13 @@
+import 'package:e_music/providers/providers.dart';
+import 'package:e_music/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 
 class FiltrarMusic extends StatelessWidget {
-  const FiltrarMusic({
-    super.key,
-  });
+  final String origen;
+
+  const FiltrarMusic({super.key, required this.origen});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +25,9 @@ class FiltrarMusic extends StatelessWidget {
           const SizedBox(
             height: 20,
           ),
-          _Searchinput()
+          _Searchinput(
+            origen: origen,
+          )
         ],
       ),
     );
@@ -30,12 +35,19 @@ class FiltrarMusic extends StatelessWidget {
 }
 
 class _Searchinput extends ConsumerWidget {
+  final String origen;
+
+  _Searchinput({super.key, required this.origen});
   @override
   Widget build(BuildContext context, ref) {
     final TextEditingController inputSearch = TextEditingController();
     return TextFormField(
       controller: inputSearch,
-      onFieldSubmitted: (value) async {},
+      onFieldSubmitted: (value) async {
+        final List<dynamic> songs = await searchSong(value, ref);
+        ModalBottomSheet.moreModalBottomSheet(
+            context: context, songList: songs, origen: origen);
+      },
       style: const TextStyle(color: Colors.pink),
       decoration: InputDecoration(
           isDense: true,
@@ -55,4 +67,11 @@ class _Searchinput extends ConsumerWidget {
               borderSide: BorderSide.none)),
     );
   }
+}
+
+Future<List<dynamic>> searchSong(String query, WidgetRef ref) async {
+  final result = await ref
+      .watch(onQueryAudioProvider)
+      .queryWithFilters(query, WithFiltersType.AUDIOS);
+  return result;
 }

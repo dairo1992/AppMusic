@@ -5,12 +5,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String avatar;
   final Widget leading;
   final String title;
+  final Widget? actions;
 
   const CustomAppBar(
       {super.key,
       this.avatar = "",
       this.leading = const Icon(Icons.arrow_back_ios),
-      required this.title});
+      required this.title,
+      this.actions});
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -35,7 +37,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   backgroundImage: NetworkImage(avatar),
                 ),
               )
-            : Container()
+            : Container(),
+        actions ?? Container()
       ],
     );
   }

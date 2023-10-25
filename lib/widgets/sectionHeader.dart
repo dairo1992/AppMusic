@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 
 class SectionHeader extends StatelessWidget {
   final String title;
-  final String action;
+  final Widget? action;
 
-  const SectionHeader(
-      {super.key, required this.title, this.action = "Ver Más"});
+  const SectionHeader({super.key, required this.title, this.action});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +16,7 @@ class SectionHeader extends StatelessWidget {
                 .textTheme
                 .bodyMedium!
                 .copyWith(fontWeight: FontWeight.bold)),
-        Text(action),
+        action ?? Container(),
       ],
     );
   }

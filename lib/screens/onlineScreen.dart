@@ -3,30 +3,53 @@ import 'package:e_music/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class OnlineScreen extends StatelessWidget {
+class OnlineScreen extends ConsumerWidget {
   const OnlineScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
     final size = MediaQuery.of(context).size;
-    return Column(
-      children: [
-        SizedBox(
-          width: size.width,
-          height: size.height * 0.70,
-          child: SingleChildScrollView(
+    final isPlayingAsync = ref.watch(isPlayingProvider);
+    return isPlayingAsync.when(
+        data: (status) {
+          if (status! > 0) {
+            return Column(
+              children: [
+                SizedBox(
+                  width: size.width,
+                  height: size.height * 0.74,
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Column(
+                      children: [
+                        const FiltrarMusic(
+                          origen: 'O',
+                        ),
+                        _TrendingMusic(),
+                        _PlayListmusic()
+                      ],
+                    ),
+                  ),
+                ),
+                const MiniReproductor()
+              ],
+            );
+          }
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
             child: Column(
               children: [
-                const FiltrarMusic(),
+                const FiltrarMusic(
+                  origen: 'O',
+                ),
                 _TrendingMusic(),
                 _PlayListmusic()
               ],
             ),
-          ),
-        ),
-        // reproductor.playing ? MiniReproductor(song: song!) : Container()
-      ],
-    );
+          );
+        },
+        error: (error, stackTrace) => Text("$error"),
+        loading: () => const CircularProgressIndicator());
   }
 }
 
@@ -38,7 +61,10 @@ class _PlayListmusic extends ConsumerWidget {
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          const SectionHeader(title: "PlayLists"),
+          const SectionHeader(
+            title: "PlayLists",
+            action: Text("Ver más"),
+          ),
           playList.when(
               data: (data) {
                 if (data.isEmpty) {
@@ -86,7 +112,10 @@ class _TrendingMusic extends ConsumerWidget {
                 child: Column(children: [
                   Padding(
                     padding: EdgeInsets.only(right: 20),
-                    child: SectionHeader(title: "Tendencia Music"),
+                    child: SectionHeader(
+                      title: "Tendencia Music",
+                      action: Text("Ver más"),
+                    ),
                   )
                 ]),
               ),
@@ -100,6 +129,7 @@ class _TrendingMusic extends ConsumerWidget {
                     itemBuilder: (context, index) {
                       return SongCard(
                         song: songs[index],
+                        indexSong: index,
                       );
                     },
                   ),

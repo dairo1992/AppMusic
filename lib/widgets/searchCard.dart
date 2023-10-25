@@ -1,16 +1,22 @@
-import 'package:e_music/models/models.dart';
+import 'package:e_music/providers/providers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class SeachCard extends StatelessWidget {
-  final SongResponse song;
+class SeachCard extends ConsumerWidget {
+  final dynamic song;
+  final String origen;
 
-  const SeachCard({super.key, required this.song});
+  const SeachCard({super.key, required this.song, required this.origen});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
+    final artworkAsync = ref.watch(getArtworkProvider(song["_id"]));
     return GestureDetector(
-      onTap: () => context.push("/playing", extra: {'idSong': song.id}),
+      onTap: () {
+        // final songs = 
+        // context.push("/playing", extra: {'localSongs': songs, 'indexSong': i});
+      },
       child: Container(
         height: 60,
         margin: const EdgeInsets.only(bottom: 10),
@@ -19,19 +25,51 @@ class SeachCard extends StatelessWidget {
             color: Colors.pink.shade100.withOpacity(0.6),
             borderRadius: BorderRadius.circular(15)),
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-          SizedBox(
-            width: 60,
-            height: 50,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(15),
-              child: Image.network(
-                song.artwork!.the480X480!,
-                errorBuilder: (context, error, stackTrace) {
-                  return Image.asset("assets/images/no-image.jpg");
-                },
-              ),
-            ),
-          ),
+          origen == "O"
+              ? SizedBox(
+                  width: 60,
+                  height: 50,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: Image.network(
+                      song.artwork!.the480X480!,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset("assets/images/no-image.jpg");
+                      },
+                    ),
+                  ),
+                )
+              : artworkAsync.when(
+                  data: (data) {
+                    if (data != null) {
+                      return Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            image: DecorationImage(
+                                fit: BoxFit.cover,
+                                image: MemoryImage(
+                                  data,
+                                  scale: 1.0,
+                                ))),
+                      );
+                    }
+                    return Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          image: const DecorationImage(
+                              fit: BoxFit.cover,
+                              image: AssetImage("assets/images/no-image.jpg"))),
+                    );
+                  },
+                  error: (error, stackTrace) => Text("$error"),
+                  loading: () => const CircularProgressIndicator(
+                    color: Colors.white,
+                  ),
+                ),
           const SizedBox(
             width: 20,
           ),
@@ -43,7 +81,7 @@ class SeachCard extends StatelessWidget {
                 SizedBox(
                   width: 200,
                   height: 30,
-                  child: Text(song.title!,
+                  child: Text(song["title"],
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                       style: Theme.of(context)
@@ -55,7 +93,7 @@ class SeachCard extends StatelessWidget {
                   width: 200,
                   height: 20,
                   child: Text(
-                    "Genero: ${song.genre}",
+                    "Artista: ${song["artist"]}",
                     style: Theme.of(context)
                         .textTheme
                         .bodySmall!

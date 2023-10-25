@@ -13,7 +13,8 @@ class CustomNavigationBar extends ConsumerWidget {
     return BottomNavigationBar(
       currentIndex: index,
       type: BottomNavigationBarType.fixed,
-      backgroundColor: Colors.deepPurple.shade800,
+      backgroundColor: Colors.deepPurple.shade100.withOpacity(0.5),
+      elevation: 0,
       unselectedItemColor: Colors.white,
       selectedItemColor: Colors.pink,
       showUnselectedLabels: false,

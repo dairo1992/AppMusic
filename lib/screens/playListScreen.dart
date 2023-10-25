@@ -14,7 +14,6 @@ class PlayListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     final (tracks) = ref.watch(playListTrackProvider(playList.id!));
-    final size = MediaQuery.of(context).size;
     return Container(
       decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -43,8 +42,16 @@ class PlayListScreen extends ConsumerWidget {
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () {
-                              context.push("/playing",
-                                  extra: {'idSong': data[index].id});
+                              final songs = ref
+                                  .watch(playListTrackProvider(playList.id!));
+                              songs.when(
+                                  data: (data) => context.push("/playing",
+                                          extra: {
+                                            'onlineSongs': data,
+                                            'indexSong': index
+                                          }),
+                                  error: (error, stackTrace) => {},
+                                  loading: () {});
                             },
                             child: ListTile(
                               leading: Text(
@@ -77,7 +84,9 @@ class PlayListScreen extends ConsumerWidget {
                   child: Text("$error"),
                 ),
             loading: () => const Center(
-                  child: CircularProgressIndicator(),
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                  ),
                 )),
       ),
     );
@@ -99,11 +108,8 @@ class _buttonsPlayAndShuffles extends StatelessWidget {
       children: [
         GestureDetector(
           onTap: () {
-            List<String> lista = [];
-            playList.forEach((e) {
-              lista.add(e.id!);
-            });
-            context.push("/playing", extra: {'idSong': lista});
+            context.push("/playing",
+                extra: {'onlineSongs': playList, 'indexSong': 0});
           },
           child: Container(
             height: 50,

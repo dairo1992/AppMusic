@@ -1,10 +1,11 @@
-import 'package:e_music/models/models.dart';
 import 'package:e_music/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
 class ModalBottomSheet {
   static void moreModalBottomSheet(
-      BuildContext context, List<SongResponse> songList) {
+      {required BuildContext context,
+      required List<dynamic> songList,
+      required String origen}) {
     Size size = MediaQuery.of(context).size;
     showModalBottomSheet(
         isScrollControlled: true,
@@ -49,6 +50,7 @@ class ModalBottomSheet {
                       itemBuilder: (context, i) {
                         return SeachCard(
                           song: songList[i],
+                          origen: origen,
                         );
                       },
                     ),
