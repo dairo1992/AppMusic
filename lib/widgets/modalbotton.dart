@@ -49,8 +49,9 @@ class ModalBottomSheet {
                       itemCount: songList.length,
                       itemBuilder: (context, i) {
                         return SeachCard(
-                          song: songList[i],
+                          songList: songList,
                           origen: origen,
+                          index: i,
                         );
                       },
                     ),

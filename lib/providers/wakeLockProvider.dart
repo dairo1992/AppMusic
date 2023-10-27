@@ -18,3 +18,22 @@ class WakeLockNotifier extends StateNotifier<bool> {
 final wakeLockProvider = StateNotifierProvider<WakeLockNotifier, bool>((ref) {
   return WakeLockNotifier();
 });
+
+class SwitchModel extends StateNotifier<bool> {
+  SwitchModel() : super(false);
+
+  bool get getSw {
+    return state;
+  }
+
+  set sw(bool value) {
+    state = state;
+  }
+
+  toogle() {
+    state = !state;
+  }
+}
+
+final switchProvider =
+    StateNotifierProvider<SwitchModel, bool>((ref) => SwitchModel());

@@ -19,15 +19,15 @@ class SongService {
     }
   }
 
-  Future<List<SongResponse>> searchSong(String query) async {
+  Future<List<dynamic>> searchSong(String query) async {
     try {
       final resp = await db.get(
           "https://blockdaemon-audius-discovery-01.bdnodes.net/v1/tracks/search?app_name=EXAMPLEAPP",
           queryParameters: {"query": query});
-      Iterable i = (resp.data["data"]);
-      final response =
-          List<SongResponse>.from(i.map((e) => SongResponse.fromJson(e)));
-      return response;
+      // Iterable i = (resp.data["data"]);
+      // final response =
+      //     List<SongResponse>.from(i.map((e) => SongResponse.fromJson(e)));
+      return resp.data["data"];
     } catch (e) {
       if (kDebugMode) {
         print("$e");

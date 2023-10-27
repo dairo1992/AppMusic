@@ -6,16 +6,14 @@ final songProvider =
     FutureProvider.family<List<SongResponse>?, List<String>>((ref, id) async {
   final service = SongService();
 
-    List<SongResponse>? songs = [];
-    final SongResponse? song = await service.getSong(id[0]);
-    songs.add(song!);
-    return songs;
-
+  List<SongResponse>? songs = [];
+  final SongResponse? song = await service.getSong(id[0]);
+  songs.add(song!);
+  return songs;
 });
 
 final searchProvider =
-    FutureProvider.family<List<SongResponse>, String>((ref, query) async {
+    FutureProvider.family<List<dynamic>, String>((ref, query) async {
   final service = SongService();
-  service.searchSong(query);
-  return [];
+  return service.searchSong(query);
 });

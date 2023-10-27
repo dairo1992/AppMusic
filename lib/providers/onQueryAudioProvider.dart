@@ -31,7 +31,19 @@ final getAudiosProvider =
     ignoreCase: true,
   );
   // return songs;
-  return limit ? songs.getRange(0, 10).toList() : songs;
+  // return limit
+  //     ? songs
+  //         .getRange(0, 10)
+  //         .where((e) => e.album!.contains("WhatsApp"))
+  //         .toList()
+  //     : songs;
+  return limit
+      ? songs
+          .where((song) => !song.album!.contains("WhatsApp"))
+          .toList()
+          .getRange(0, 10)
+          .toList()
+      : songs.where((song) => !song.album!.contains("WhatsApp")).toList();
 });
 
 final getArtworkProvider =

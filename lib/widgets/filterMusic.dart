@@ -1,7 +1,9 @@
 import 'package:e_music/providers/providers.dart';
+import 'package:e_music/services/songService.dart';
 import 'package:e_music/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 class FiltrarMusic extends StatelessWidget {
@@ -44,7 +46,8 @@ class _Searchinput extends ConsumerWidget {
     return TextFormField(
       controller: inputSearch,
       onFieldSubmitted: (value) async {
-        final List<dynamic> songs = await searchSong(value, ref);
+        List<dynamic> songs = await searchSong(value, ref, origen);
+        // ignore: use_build_context_synchronously
         ModalBottomSheet.moreModalBottomSheet(
             context: context, songList: songs, origen: origen);
       },
@@ -69,9 +72,17 @@ class _Searchinput extends ConsumerWidget {
   }
 }
 
-Future<List<dynamic>> searchSong(String query, WidgetRef ref) async {
-  final result = await ref
-      .watch(onQueryAudioProvider)
-      .queryWithFilters(query, WithFiltersType.AUDIOS);
+Future<List<dynamic>> searchSong(
+    String query, WidgetRef ref, String origen) async {
+  List<dynamic> result;
+  if (origen == "L") {
+    result = await ref
+        .watch(onQueryAudioProvider)
+        .queryWithFilters(query, WithFiltersType.AUDIOS);
+  } else {
+    final service = SongService();
+    result = await service.searchSong(query);
+  }
+
   return result;
 }

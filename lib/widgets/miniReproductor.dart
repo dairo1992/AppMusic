@@ -1,6 +1,4 @@
 import 'dart:typed_data';
-
-import 'package:e_music/models/audioMetadata.dart';
 import 'package:e_music/models/models.dart';
 import 'package:e_music/providers/reproductorProvider.dart';
 import 'package:e_music/widgets/widgets.dart';
@@ -27,7 +25,7 @@ class MiniReproductor extends ConsumerWidget {
         padding: const EdgeInsets.all(5),
         color: Colors.pink.shade100,
         width: size.width,
-        height: 70,
+        height: 60,
         child: StreamBuilder<SequenceState?>(
           stream: reproductor.sequenceStateStream,
           builder: (context, snapshot) {
@@ -120,7 +118,7 @@ class MiniReproductor extends ConsumerWidget {
                   ),
                 ),
                 SizedBox(
-                  width: size.width * 0.46,
+                  width: size.width * 0.44,
                   child: Text(
                     metadata.title,
                     overflow: TextOverflow.ellipsis,
@@ -129,7 +127,7 @@ class MiniReproductor extends ConsumerWidget {
                   ),
                 ),
                 SizedBox(
-                  width: 150,
+                  width: size.width*0.4,
                   height: size.height * 0.12,
                   child: PlayerButtons(
                     sizeIcon: 30,

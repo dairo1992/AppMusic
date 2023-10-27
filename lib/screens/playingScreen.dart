@@ -44,26 +44,6 @@ class PlayingScreenScreen extends ConsumerWidget {
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () => context.pop(),
           ),
-          // actions: localSongs != null
-          //     ? _MenuAddSongaPlayList(
-          //         idSong: localSongs![indexSong!].id,
-          //       )
-          //     : null,
-
-          // actions: StreamBuilder<List<int>?>(
-          //     stream: reproductor.shuffleIndicesStream,
-          //     builder: (context, snapshot) {
-          //       final data = snapshot.data;
-          //       if (data != null) {
-          //         if (data.isNotEmpty) {
-          //           return _MenuAddSongaPlayList(
-          //             idSong: localSongs![indexSong!].id,
-          //           );
-          //         }
-          //       }
-          //       return Container();
-          //     }),
-
           actions: StreamBuilder<SequenceState?>(
               stream: reproductor.sequenceStateStream,
               builder: (context, snapshot) {
@@ -76,9 +56,11 @@ class PlayingScreenScreen extends ConsumerWidget {
                     metadata.artHeaders!["image"]!.contains("https") == true
                         ? "I"
                         : "L";
-                return _MenuAddSongaPlayList(
-                  idSong: int.parse(metadata.id),
-                );
+                return origen == "L"
+                    ? _MenuAddSongaPlayList(
+                        idSong: int.parse(metadata.id),
+                      )
+                    : Container();
               }),
         ),
         extendBodyBehindAppBar: true,
@@ -191,7 +173,7 @@ class _HeaderSong extends StatelessWidget {
                                     width: size.width,
                                     height: size.height * 0.5,
                                     fit: BoxFit.cover,
-                                    filterQuality: FilterQuality.low,
+                                    filterQuality: FilterQuality.high,
                                     errorBuilder:
                                         (context, exception, stackTrace) {
                                       return ClipRRect(
@@ -238,6 +220,19 @@ class _HeaderSong extends StatelessWidget {
                                 return const Image(
                                     image: AssetImage(
                                         "assets/images/loading.gif"));
+                              },
+                              errorBuilder: (context, error, stackTrace) {
+                                if (error == null) {}
+                                return Image.asset(
+                                  "assets/images/no-image.jpg",
+                                  gaplessPlayback: false,
+                                  repeat: ImageRepeat.noRepeat,
+                                  scale: 1.0,
+                                  width: size.width,
+                                  height: size.height * 0.5,
+                                  fit: BoxFit.cover,
+                                  filterQuality: FilterQuality.low,
+                                );
                               },
                             ),
                           ),
