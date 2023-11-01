@@ -12,23 +12,39 @@ final router = GoRouter(routes: [
         if (args["localSongs"] != null) {
           final List<SongModel> songs = args["localSongs"];
           final int index = args["indexSong"];
-          return PlayingScreenScreen(localSongs: songs, indexSong: index);
+          return PlayingScreenScreen(
+            localSongs: songs,
+            indexSong: index,
+            shuffle: args["shuffle"] ?? false,
+          );
         } else {
           final List<SongResponse> songs = args["onlineSongs"];
           final int index = args["indexSong"];
-          return PlayingScreenScreen(onlineSongs: songs, indexSong: index);
+          return PlayingScreenScreen(
+              onlineSongs: songs,
+              indexSong: index,
+              shuffle: args["shuffle"] ?? false);
         }
       }),
   GoRoute(
       path: '/playList',
       builder: (context, state) {
         Map<String, dynamic> args = state.extra as Map<String, dynamic>;
-        return PlayListScreen(
-          playList: args["playList"],
-        );
+        if (args["playListOnline"] != null) {
+          final PlayListOnlineModel playListOnline = args["playListOnline"];
+          return PlayListScreen(playListonline: playListOnline);
+        } else {
+          final PlaylistModel playListLocal = args["playListLocal"];
+          return PlayListScreen(
+            playListLocal: playListLocal,
+          );
+        }
       }),
   GoRoute(
     path: '/allSongs',
-    builder: (context, state) => AllSongsScreen(),
+    builder: (context, state) {
+      Map<String, dynamic> args = state.extra as Map<String, dynamic>;
+      return AllSongsScreen(origen: args["origen"]);
+    },
   )
 ]);

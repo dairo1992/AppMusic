@@ -5,10 +5,6 @@ class ReproductorNotifier extends StateNotifier<AudioPlayer> {
   ReproductorNotifier()
       : super(AudioPlayer(
             audioPipeline: AudioPipeline(
-          androidAudioEffects: [
-            AndroidLoudnessEnhancer(),
-            AndroidEqualizer(),
-          ],
         )));
 }
 

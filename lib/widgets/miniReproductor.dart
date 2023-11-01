@@ -43,22 +43,56 @@ class MiniReproductor extends ConsumerWidget {
                 Hero(
                   tag: metadata.id,
                   child: SizedBox(
-                    width: size.width * 0.13,
-                    height: size.height * 0.07,
-                    child: image == "L"
-                        ? FutureBuilder<Uint8List?>(
-                            future: OnAudioQuery().queryArtwork(
-                                int.parse(metadata.id), ArtworkType.AUDIO,
-                                format: ArtworkFormat.JPEG,
-                                size: 200,
-                                quality: 50),
-                            builder: (context, item) {
-                              if (item.data != null && item.data!.isNotEmpty) {
+                      width: size.width * 0.13,
+                      height: size.height * 0.07,
+                      child: image == "L"
+                          ? FutureBuilder<Uint8List?>(
+                              future: OnAudioQuery().queryArtwork(
+                                  int.parse(metadata.id), ArtworkType.AUDIO,
+                                  format: ArtworkFormat.JPEG,
+                                  size: 200,
+                                  quality: 50),
+                              builder: (context, item) {
+                                if (item.data != null &&
+                                    item.data!.isNotEmpty) {
+                                  return ClipRRect(
+                                    borderRadius: BorderRadius.circular(30),
+                                    clipBehavior: Clip.antiAlias,
+                                    child: Image.memory(
+                                      item.data!,
+                                      gaplessPlayback: false,
+                                      repeat: ImageRepeat.noRepeat,
+                                      scale: 1.0,
+                                      width: size.width,
+                                      height: size.height * 0.5,
+                                      fit: BoxFit.cover,
+                                      filterQuality: FilterQuality.low,
+                                      errorBuilder:
+                                          (context, exception, stackTrace) {
+                                        return ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                          clipBehavior: Clip.antiAlias,
+                                          child: Image.asset(
+                                            "assets/images/no-image.jpg",
+                                            gaplessPlayback: false,
+                                            repeat: ImageRepeat.noRepeat,
+                                            scale: 1.0,
+                                            width: size.width,
+                                            height: size.height * 0.5,
+                                            fit: BoxFit.cover,
+                                            filterQuality: FilterQuality.low,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  );
+                                }
                                 return ClipRRect(
                                   borderRadius: BorderRadius.circular(30),
                                   clipBehavior: Clip.antiAlias,
-                                  child: Image.memory(
-                                    item.data!,
+                                  child: Image.asset(
+                                    "assets/images/no-image.jpg",
                                     gaplessPlayback: false,
                                     repeat: ImageRepeat.noRepeat,
                                     scale: 1.0,
@@ -66,56 +100,48 @@ class MiniReproductor extends ConsumerWidget {
                                     height: size.height * 0.5,
                                     fit: BoxFit.cover,
                                     filterQuality: FilterQuality.low,
-                                    errorBuilder:
-                                        (context, exception, stackTrace) {
-                                      return ClipRRect(
-                                        borderRadius: BorderRadius.circular(30),
-                                        clipBehavior: Clip.antiAlias,
-                                        child: Image.asset(
-                                          "assets/images/no-image.jpg",
-                                          gaplessPlayback: false,
-                                          repeat: ImageRepeat.noRepeat,
-                                          scale: 1.0,
-                                          width: size.width,
-                                          height: size.height * 0.5,
-                                          fit: BoxFit.cover,
-                                          filterQuality: FilterQuality.low,
-                                        ),
-                                      );
-                                    },
                                   ),
                                 );
-                              }
-                              return ClipRRect(
-                                borderRadius: BorderRadius.circular(30),
-                                clipBehavior: Clip.antiAlias,
-                                child: Image.asset(
-                                  "assets/images/no-image.jpg",
-                                  gaplessPlayback: false,
-                                  repeat: ImageRepeat.noRepeat,
-                                  scale: 1.0,
-                                  width: size.width,
-                                  height: size.height * 0.5,
-                                  fit: BoxFit.cover,
-                                  filterQuality: FilterQuality.low,
-                                ),
-                              );
-                            })
-                        : ClipRRect(
-                            borderRadius: BorderRadius.circular(30),
-                            child: Image.network(
-                              metadata.artHeaders!["image"]!,
-                              fit: BoxFit.fill,
-                              loadingBuilder:
-                                  (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return const Image(
-                                    image: AssetImage(
-                                        "assets/images/loading.gif"));
-                              },
-                            ),
-                          ),
-                  ),
+                              })
+                          : ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              clipBehavior: Clip.antiAlias,
+                              child: Image.network(
+                                metadata.artHeaders!["image"]!,
+                                gaplessPlayback: false,
+                                repeat: ImageRepeat.noRepeat,
+                                scale: 1.0,
+                                width: size.width * 0.35,
+                                height: size.height * 0.5,
+                                fit: BoxFit.fill,
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                  if (loadingProgress == null) {
+                                    return child;
+                                  }
+                                  return Image(
+                                      gaplessPlayback: false,
+                                      repeat: ImageRepeat.noRepeat,
+                                      width: size.width * 0.35,
+                                      height: size.height * 0.5,
+                                      fit: BoxFit.fill,
+                                      image: AssetImage(
+                                          "assets/images/loading.gif"));
+                                },
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Image.asset(
+                                    "assets/images/no-image.jpg",
+                                    gaplessPlayback: false,
+                                    repeat: ImageRepeat.noRepeat,
+                                    scale: 1.0,
+                                    width: size.width * 0.35,
+                                    height: size.height * 0.5,
+                                    fit: BoxFit.cover,
+                                    filterQuality: FilterQuality.low,
+                                  );
+                                },
+                              ),
+                            )),
                 ),
                 SizedBox(
                   width: size.width * 0.44,
@@ -127,7 +153,7 @@ class MiniReproductor extends ConsumerWidget {
                   ),
                 ),
                 SizedBox(
-                  width: size.width*0.4,
+                  width: size.width * 0.4,
                   height: size.height * 0.12,
                   child: PlayerButtons(
                     sizeIcon: 30,

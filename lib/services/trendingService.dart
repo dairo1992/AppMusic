@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 class TrendingService {
   final db = Conexion().getConexion();
 
-  Future<List<SongResponse>> getTrending() async {
+  Future<List<SongResponse>> getTrending(bool limit) async {
     try {
       final resp = await db.get("tracks/trending?app_name=E_Music");
       if (resp.toString().startsWith("<!DOCTYPE")) {
@@ -14,7 +14,7 @@ class TrendingService {
       Iterable i = (resp.data["data"]);
       final response =
           List<SongResponse>.from(i.map((e) => SongResponse.fromJson(e)));
-      return response;
+      return limit ? response.getRange(0, 10).toList() : response;
     } catch (e) {
       if (kDebugMode) {
         print("$e");

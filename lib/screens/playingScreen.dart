@@ -19,14 +19,20 @@ class PlayingScreenScreen extends ConsumerWidget {
   List<SongResponse>? onlineSongs;
   List<SongModel>? localSongs;
   int? indexSong;
+  bool shuffle;
   PlayingScreenScreen(
-      {super.key, this.onlineSongs, this.localSongs, this.indexSong});
+      {super.key,
+      this.onlineSongs,
+      this.localSongs,
+      this.indexSong,
+      this.shuffle = false});
 
   @override
   Widget build(BuildContext context, ref) {
     final reproductor = ref.watch(reproductorProvider);
     if (indexSong != -1) {
-      _prepareReprodictor(reproductor, onlineSongs, localSongs, indexSong);
+      _prepareReprodictor(
+          reproductor, onlineSongs, localSongs, indexSong, shuffle);
     }
     return Container(
       decoration: BoxDecoration(
@@ -56,11 +62,8 @@ class PlayingScreenScreen extends ConsumerWidget {
                     metadata.artHeaders!["image"]!.contains("https") == true
                         ? "I"
                         : "L";
-                return origen == "L"
-                    ? _MenuAddSongaPlayList(
-                        idSong: int.parse(metadata.id),
-                      )
-                    : Container();
+                return _MenuAddSongaPlayList(
+                    idSong: metadata.id, origen: origen);
               }),
         ),
         extendBodyBehindAppBar: true,
@@ -88,38 +91,60 @@ class PlayingScreenScreen extends ConsumerWidget {
 }
 
 class _MenuAddSongaPlayList extends ConsumerWidget {
-  final int idSong;
+  final String idSong;
+  final String origen;
 
-  _MenuAddSongaPlayList({required this.idSong});
+  const _MenuAddSongaPlayList({required this.idSong, required this.origen});
 
   @override
   Widget build(BuildContext context, ref) {
-    final playList = ref.watch(getPlayListProvider);
-
-    return playList.when(
-        data: (playList) => PopupMenuButton<PlaylistModel>(
-            icon: const Icon(Icons.playlist_add),
-            onSelected: (PlaylistModel item) async {
-              final resp = await ref
-                  .read(onQueryAudioProvider)
-                  .addToPlaylist(item.id, idSong);
-              if (resp) {
-                ref.refresh(getPlayListProvider);
-                ref.refresh(getTrackPlaylistProvider(item.id));
-              }
-              showInSnackBar(
-                  context: context,
-                  type: resp,
-                  msg: resp ? "Canción Agregada" : "Ocurrio un error");
-            },
-            itemBuilder: (BuildContext context) => playList
-                .map((e) => PopupMenuItem<PlaylistModel>(
-                      value: e,
-                      child: Text(e.playlist),
-                    ))
-                .toList()),
-        error: (error, stackTrace) => Text("$error"),
-        loading: () => const CircularProgressIndicator());
+    if (origen == "L") {
+      final playList = ref.watch(getPlayListLocalProvider);
+      return playList.when(
+          data: (playList) => PopupMenuButton<PlaylistModel>(
+              icon: const Icon(Icons.playlist_add),
+              onSelected: (PlaylistModel item) async {
+                final resp = await ref
+                    .read(onQueryAudioProvider)
+                    .addToPlaylist(item.id, int.parse(idSong));
+                if (resp) {
+                  ref.refresh(getPlayListLocalProvider);
+                  ref.refresh(getTrackPlaylistProvider(item.id));
+                }
+                // ignore: use_build_context_synchronously
+                showInSnackBar(
+                    context: context,
+                    type: resp,
+                    msg: resp ? "Canción Agregada" : "Ocurrio un error");
+              },
+              itemBuilder: (BuildContext context) => playList
+                  .map((e) => PopupMenuItem<PlaylistModel>(
+                        value: e,
+                        child: Text(e.playlist),
+                      ))
+                  .toList()),
+          error: (error, stackTrace) => Text("$error"),
+          loading: () => const CircularProgressIndicator());
+    } else {
+      final playList = ref.watch(playListOnloneProvider);
+      return PopupMenuButton<PlayListOnlineModel>(
+          icon: const Icon(Icons.playlist_add),
+          onSelected: (PlayListOnlineModel item) async {
+            final resp = await ref
+                .read(playListOnloneProvider.notifier)
+                .addSong(item.title!, idSong);
+            showInSnackBar(
+                context: context,
+                type: resp,
+                msg: resp ? "Canción Agregada" : "Ocurrio un error");
+          },
+          itemBuilder: (BuildContext context) => playList
+              .map((e) => PopupMenuItem<PlayListOnlineModel>(
+                    value: e,
+                    child: Text(e.title!),
+                  ))
+              .toList());
+    }
   }
 }
 
@@ -222,7 +247,6 @@ class _HeaderSong extends StatelessWidget {
                                         "assets/images/loading.gif"));
                               },
                               errorBuilder: (context, error, stackTrace) {
-                                if (error == null) {}
                                 return Image.asset(
                                   "assets/images/no-image.jpg",
                                   gaplessPlayback: false,
@@ -298,7 +322,7 @@ class _PogresiveBar extends StatelessWidget {
 }
 
 _prepareReprodictor(AudioPlayer reproductor, List<SongResponse>? onlineSongs,
-    List<SongModel>? localSongs, int? indexSong) {
+    List<SongModel>? localSongs, int? indexSong, bool shuffle) {
   if (localSongs != null) {
     final playList = ConcatenatingAudioSource(
         useLazyPreparation: true,
@@ -312,13 +336,6 @@ _prepareReprodictor(AudioPlayer reproductor, List<SongResponse>? onlineSongs,
                     artHeaders: {"image": e.data},
                     extras: {"heroTag": "image_${e.id}"})))
             .toList());
-    // .map((e) => AudioSource.uri(Uri.parse(e.data),
-    //     tag: AudioMetadata(
-    //         album: e.albumId.toString(),
-    //         title: e.title,
-    //         artwork: e.id.toString(),
-    //         idSong: "$e.id")))
-    // .toList());
     reproductor.setAudioSource(playList,
         initialIndex: indexSong ?? 0, initialPosition: Duration.zero);
   } else {
@@ -335,14 +352,9 @@ _prepareReprodictor(AudioPlayer reproductor, List<SongResponse>? onlineSongs,
                     album: "Desconocido",
                     artHeaders: {"image": e.artwork!.the480X480!})))
             .toList());
-    //     tag: AudioMetadata(
-    //         album: "Desconocido",
-    //         title: e.title!,
-    //         artwork: e.artwork!.the480X480!,
-    //         idSong: e.id!)))
-    // .toList());
     reproductor.setAudioSource(playList,
         initialIndex: indexSong ?? 0, initialPosition: Duration.zero);
+    reproductor.setShuffleModeEnabled(shuffle);
   }
 }
 

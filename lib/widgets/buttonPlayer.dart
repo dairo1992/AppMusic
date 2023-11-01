@@ -2,6 +2,7 @@ import 'package:e_music/providers/reproductorProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 
 class PlayerButtons extends ConsumerWidget {
   final double sizeIcon;
@@ -16,6 +17,7 @@ class PlayerButtons extends ConsumerWidget {
         StreamBuilder<SequenceState?>(
             stream: reproductor.sequenceStateStream,
             builder: (context, snapshot) {
+   
               return reproductor.hasPrevious
                   ? IconButton(
                       onPressed: () {

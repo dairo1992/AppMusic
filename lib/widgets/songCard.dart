@@ -10,25 +10,91 @@ class SongCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return InkWell(
       onTap: () {
         List<SongResponse> lista = [];
         lista.add(song);
-        context.push("/playing", extra: {'onlineSongs': lista, 'indexSong': indexSong});
+        context.push("/playing",
+            extra: {'onlineSongs': lista, 'indexSong': indexSong});
       },
       child: Container(
         margin: const EdgeInsets.only(right: 10),
         child: Stack(
           alignment: Alignment.bottomCenter,
           children: [
-            Container(
-              width: MediaQuery.of(context).size.width * 0.35,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  image: DecorationImage(
-                      image: NetworkImage(song.artwork!.the480X480!),
-                      fit: BoxFit.cover)),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              clipBehavior: Clip.antiAlias,
+              child: Image.network(
+                song.artwork!.the480X480!,
+                gaplessPlayback: false,
+                repeat: ImageRepeat.noRepeat,
+                scale: 1.0,
+                width: size.width * 0.35,
+                height: size.height * 0.5,
+                fit: BoxFit.fill,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  }
+                  return Image(
+                      gaplessPlayback: false,
+                      repeat: ImageRepeat.noRepeat,
+                      width: size.width * 0.35,
+                      height: size.height * 0.5,
+                      fit: BoxFit.fill,
+                      image: AssetImage("assets/images/loading.gif"));
+                },
+                errorBuilder: (context, error, stackTrace) {
+                  return Image.asset(
+                    "assets/images/no-image.jpg",
+                    gaplessPlayback: false,
+                    repeat: ImageRepeat.noRepeat,
+                    scale: 1.0,
+                    width: size.width * 0.35,
+                    height: size.height * 0.5,
+                    fit: BoxFit.cover,
+                    filterQuality: FilterQuality.low,
+                  );
+                },
+              ),
             ),
+            // ClipRRect(
+            //   borderRadius: BorderRadius.circular(20),
+            //   clipBehavior: Clip.antiAlias,
+            //   child: Image.network(
+            //     song.artwork!.the1000X1000!,
+            //     gaplessPlayback: false,
+            //     repeat: ImageRepeat.noRepeat,
+            //     scale: 1.0,
+            //     width: size.width * 0.35,
+            //     height: size.height * 0.5,
+            //     fit: BoxFit.cover,
+            //     filterQuality: FilterQuality.low,
+            //     errorBuilder: (context, error, stackTrace) {
+            //       return Image.asset("assets/images/no-image.jpg",
+            //           gaplessPlayback: false,
+            //           repeat: ImageRepeat.noRepeat,
+            //           scale: 1.0,
+            //           width: size.width * 0.35,
+            //           height: size.height * 0.5,
+            //           fit: BoxFit.cover,
+            //           filterQuality: FilterQuality.low);
+            //     },
+            //     loadingBuilder: (context, child, loadingProgress) {
+            //       if (loadingProgress == null) return Container();
+            //       return Image.asset("assets/images/jar-loading.gif",
+            //           gaplessPlayback: false,
+            //           repeat: ImageRepeat.noRepeat,
+            //           scale: 1.0,
+            //           width: size.width * 0.35,
+            //           height: size.height * 0.5,
+            //           fit: BoxFit.cover,
+            //           filterQuality: FilterQuality.low);
+            //     },
+            //   ),
+            // ),
             Container(
               width: MediaQuery.of(context).size.width * 0.32,
               height: 40,

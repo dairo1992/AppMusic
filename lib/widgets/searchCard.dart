@@ -110,7 +110,7 @@ class SeachCard extends ConsumerWidget {
                   width: 200,
                   height: 20,
                   child: Text(
-                    "Artista: ${songList[index]["artist"]}",
+                    "Artista: ${songList[index]["artist"] ?? 'Indefinido'}",
                     style: Theme.of(context)
                         .textTheme
                         .bodySmall!

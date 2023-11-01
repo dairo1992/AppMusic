@@ -61,7 +61,8 @@ final getArtworkProvider =
   return null;
 });
 
-final getPlayListProvider = FutureProvider<List<PlaylistModel>>((ref) async {
+final getPlayListLocalProvider =
+    FutureProvider<List<PlaylistModel>>((ref) async {
   final driver = ref.watch(onQueryAudioProvider);
   return await driver.queryPlaylists();
 });

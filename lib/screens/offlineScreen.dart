@@ -107,7 +107,8 @@ class _SongCard extends ConsumerWidget {
                 child: SectionHeader(
                     title: "Tu música",
                     action: TextButton(
-                        onPressed: () => context.push("/allSongs"),
+                        onPressed: () =>
+                            context.push("/allSongs", extra: {'origen': "L"}),
                         child: Text("Ver más",
                             style: Theme.of(context)
                                 .textTheme
@@ -238,76 +239,7 @@ class _PlayListmusic extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     // final playList = ref.watch(onQueryAudioProvider);
-    final playList = ref.watch(getPlayListProvider);
-    Future<void> _showMyDialog() async {
-      final textInput = TextEditingController();
-      return showDialog<void>(
-        context: context,
-        barrierDismissible: false, // user must tap button!
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text('Nueva Playlist'),
-                Icon(
-                  Icons.playlist_play_rounded,
-                  size: 30,
-                )
-              ],
-            ),
-            backgroundColor: Colors.white,
-            content: SingleChildScrollView(
-              child: ListBody(
-                children: [
-                  TextFormField(
-                      controller: textInput,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium!
-                          .copyWith(color: Colors.black),
-                      decoration: InputDecoration(
-                          enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: 2,
-                            color: Colors.deepPurple.shade200.withOpacity(0.8)),
-                        borderRadius: BorderRadius.circular(20),
-                      ))),
-                ],
-              ),
-            ),
-            actions: [
-              // ignore: prefer_const_constructors
-              TextButton(
-                onPressed: () => context.pop(),
-                child: const Text("Cencelar"),
-              ),
-              TextButton(
-                child: const Text('Agregar'),
-                onPressed: () async {
-                  final type = await ref
-                      .read(onQueryAudioProvider)
-                      .createPlaylist(textInput.text);
-                  ref.refresh(getPlayListProvider);
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(
-                      type ? "PlayList Creada" : "ocurrio un error",
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          fontSize: 16.0, fontWeight: FontWeight.bold),
-                    ),
-                    duration: const Duration(seconds: 2),
-                    backgroundColor: type ? Colors.green : Colors.red,
-                  ));
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
-
+    final playList = ref.watch(getPlayListLocalProvider);
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -318,7 +250,7 @@ class _PlayListmusic extends ConsumerWidget {
                 color: Colors.pink.shade100,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30)),
-                onPressed: () => _showMyDialog(),
+                onPressed: () => _showMyDialog(context, ref),
                 child: const Icon(
                   Icons.add,
                   color: Colors.white,
@@ -339,6 +271,8 @@ class _PlayListmusic extends ConsumerWidget {
                             color: Colors.pink.shade100.withOpacity(0.6),
                             borderRadius: BorderRadius.circular(15)),
                         child: GestureDetector(
+                          onTap: () => context.push("/playList",
+                              extra: {"playListLocal": playlist[i]}),
                           onLongPressEnd: (position) {
                             _showContextMenu(context, position.globalPosition,
                                 playlist[i], ref);
@@ -579,8 +513,7 @@ void _showContextMenu(BuildContext context, Offset position,
                       // final type = await ref
                       // .read(onQueryAudioProvider)
                       // .renamePlaylist(playList.id, textEditInput.text);
-                      ref.refresh(getPlayListProvider);
-                      print("Editando");
+                      ref.refresh(getPlayListLocalProvider);
                       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       //   content: Text(
                       //     type ? "PlayList Actualizada" : "ocurrio un error",
@@ -601,9 +534,78 @@ void _showContextMenu(BuildContext context, Offset position,
           break;
         case 2:
           ref.read(onQueryAudioProvider).removePlaylist(playList.id);
-          ref.refresh(getPlayListProvider);
+          ref.refresh(getPlayListLocalProvider);
           break;
       }
     }
   });
+}
+
+Future<void> _showMyDialog(BuildContext context, WidgetRef ref) async {
+  final textInput = TextEditingController();
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // user must tap button!
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Text('Nueva Playlist'),
+            Icon(
+              Icons.playlist_play_rounded,
+              size: 30,
+            )
+          ],
+        ),
+        backgroundColor: Colors.white,
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: [
+              TextFormField(
+                  controller: textInput,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium!
+                      .copyWith(color: Colors.black),
+                  decoration: InputDecoration(
+                      enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        width: 2,
+                        color: Colors.deepPurple.shade200.withOpacity(0.8)),
+                    borderRadius: BorderRadius.circular(20),
+                  ))),
+            ],
+          ),
+        ),
+        actions: [
+          // ignore: prefer_const_constructors
+          TextButton(
+            onPressed: () => context.pop(),
+            child: const Text("Cencelar"),
+          ),
+          TextButton(
+            child: const Text('Agregar'),
+            onPressed: () async {
+              final type = await ref
+                  .read(onQueryAudioProvider)
+                  .createPlaylist(textInput.text);
+              ref.refresh(getPlayListLocalProvider);
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(
+                  type ? "PlayList Creada" : "ocurrio un error",
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      fontSize: 16.0, fontWeight: FontWeight.bold),
+                ),
+                duration: const Duration(seconds: 2),
+                backgroundColor: type ? Colors.green : Colors.red,
+              ));
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
 }
