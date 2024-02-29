@@ -155,7 +155,7 @@ class MiniReproductor extends ConsumerWidget {
                 SizedBox(
                   width: size.width * 0.4,
                   height: size.height * 0.12,
-                  child: PlayerButtons(
+                  child: const PlayerButtons(
                     sizeIcon: 30,
                   ),
                 ),

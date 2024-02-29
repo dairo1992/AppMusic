@@ -2,12 +2,13 @@ import 'package:e_music/providers/reproductorProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:just_audio_background/just_audio_background.dart';
 
 class PlayerButtons extends ConsumerWidget {
   final double sizeIcon;
+  final bool? showShuffle;
 
-  PlayerButtons({super.key, required this.sizeIcon});
+  const PlayerButtons(
+      {super.key, required this.sizeIcon, this.showShuffle = false});
   @override
   Widget build(BuildContext context, ref) {
     final reproductor = ref.watch(reproductorProvider);
@@ -17,7 +18,6 @@ class PlayerButtons extends ConsumerWidget {
         StreamBuilder<SequenceState?>(
             stream: reproductor.sequenceStateStream,
             builder: (context, snapshot) {
-   
               return reproductor.hasPrevious
                   ? IconButton(
                       onPressed: () {
@@ -95,6 +95,25 @@ class PlayerButtons extends ConsumerWidget {
                       ))
                   : Container();
             }),
+        showShuffle!
+            ? StreamBuilder<bool>(
+                stream: reproductor.shuffleModeEnabledStream,
+                builder: (context, snapshot) {
+                  final shuffleModeEnabled = snapshot.data ?? false;
+                  return IconButton(
+                      onPressed: () async {
+                        final enable = !shuffleModeEnabled;
+                        if (enable) {
+                          await reproductor.shuffle();
+                        }
+                        await reproductor.setShuffleModeEnabled(enable);
+                      },
+                      icon: shuffleModeEnabled
+                          ? const Icon(Icons.shuffle_on_outlined, color: Colors.white)
+                          : const Icon(Icons.shuffle, color: Colors.white));
+                },
+              )
+            : const SizedBox(),
       ],
     );
   }

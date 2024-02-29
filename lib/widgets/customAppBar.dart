@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String avatar;
-  final Widget leading;
+  final Widget? leading;
   final String title;
   final Widget? actions;
 
@@ -24,11 +24,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               .copyWith(fontSize: 25, fontWeight: FontWeight.bold)),
       backgroundColor: Colors.transparent,
       elevation: 0,
-      leading: IconButton(
-          onPressed: () {
-            context.pop();
-          },
-          icon: leading),
+      // leading: leading != null
+      //     ? IconButton(
+      //         onPressed: () {
+      //           context.pop();
+      //         },
+      //         icon: leading!)
+      //     : null,
       actions: [
         avatar != ''
             ? Container(

@@ -46,5 +46,5 @@ final router = GoRouter(routes: [
       Map<String, dynamic> args = state.extra as Map<String, dynamic>;
       return AllSongsScreen(origen: args["origen"]);
     },
-  )
-]);
+  ),
+  ]);

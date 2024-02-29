@@ -8,6 +8,7 @@ environment:
 
 dependencies:
   dio: ^5.3.3
+  equalizer_flutter: ^0.0.1
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.4.3

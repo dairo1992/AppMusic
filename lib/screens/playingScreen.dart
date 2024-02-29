@@ -78,8 +78,9 @@ class PlayingScreenScreen extends ConsumerWidget {
                   children: [
                     _HeaderSong(reproductor: reproductor),
                     _PogresiveBar(reproductor: reproductor),
-                    PlayerButtons(
+                    const PlayerButtons(
                       sizeIcon: 45,
+                      showShuffle: true,
                     ),
                   ],
                 ))
