@@ -4,6 +4,7 @@ import 'package:e_music/screens/screens.dart';
 import 'package:e_music/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeScreen extends ConsumerWidget {
   final SongResponse? song;
@@ -22,12 +23,10 @@ class HomeScreen extends ConsumerWidget {
             Colors.deepPurple.shade200.withOpacity(0.8),
           ])),
       child: Scaffold(
-        appBar: const CustomAppBar(
-          // leading: IconButton(
-          //     onPressed: () {
-          //       // Wakelock.enable();
-          //     },
-          //     icon: const Icon(Icons.grid_view_rounded, color: Colors.white)),
+        appBar: CustomAppBar(
+          leading: IconButton(
+              onPressed: () => context.push("/equalizer"),
+              icon: const Icon(Icons.equalizer_outlined, color: Colors.white)),
           avatar:
               "https://as2.ftcdn.net/v2/jpg/05/62/57/51/500_F_562575144_J8ohmiSchh1A82kVXqEr9ya50DnQEFQk.jpg",
           title: '',

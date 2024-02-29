@@ -2,10 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 
 class ReproductorNotifier extends StateNotifier<AudioPlayer> {
-  ReproductorNotifier()
-      : super(AudioPlayer(
-            audioPipeline: AudioPipeline(
-        )));
+  ReproductorNotifier() : super(AudioPlayer());
 }
 
 final reproductorProvider =
